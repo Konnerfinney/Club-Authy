@@ -12,8 +12,7 @@ export default function Home() {
   if(status === "loading") {
     return <></>
   }
-  if (session?.user){
-    return (
+  return (
     
       <div className="flex h-screen items-center justify-center">
         <div style={{
@@ -32,7 +31,7 @@ export default function Home() {
         />
       </div>
         <div>
-          <h1>hi {session?.user?.name}</h1>
+          <h1></h1>
         </div>
   
       </div>
@@ -40,5 +39,4 @@ export default function Home() {
 
       
     );
-  }
 }
