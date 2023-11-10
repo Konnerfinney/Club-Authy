@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "concurrently \"next dev\" \"node bot/bot.js\"",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -15,7 +15,9 @@
     "auth": "^0.0.9",
     "autoprefixer": "10.4.14",
     "axios": "^1.5.1",
-    "discord.js": "^14.11.0",
+    "concurrently": "^8.2.2",
+    "discord.js": "^14.13.0",
+    "dotenv": "^16.3.1",
     "eslint": "8.46.0",
     "eslint-config-next": "13.4.12",
     "mongodb": "^6.2.0",

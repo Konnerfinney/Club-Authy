@@ -1,26 +1,53 @@
-// app/servers/[serverId].tsx
+// app/servers/[serverId]/page.tsx
+"use client";
+import { useEffect, useState } from 'react';
+import { useSession } from 'next-auth/react';
 
-// If you are fetching data from an external API or database, implement this function
-async function fetchServerData(serverId) {
-    const response = await fetch(`http://your-api-endpoint/servers/${serverId}`);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch server data for ID ${serverId}`);
+export default function Page({ params }) {
+  const { serverId } = params;
+  const { data: session } = useSession();
+  const [isModerated, setIsModerated] = useState(false);
+  const [isOwner, setIsOwner] = useState(false);
+  const [guildInfo, setGuildInfo] = useState(null);
+
+  useEffect(() => {
+    async function checkServerStatus() {
+      if (session?.accessToken && serverId) {
+        try {
+          const res = await fetch(`/api/checkServerStatus?serverId=${serverId}&accessToken=${session.accessToken}`);
+          const data = await res.json();
+
+          if (res.ok) {
+            setIsModerated(data.isModerated);
+            setIsOwner(data.isOwner);
+            setGuildInfo(data.guildInfo); // Adjust according to what your API returns
+          } else {
+            console.error(data.error);
+          }
+        } catch (error) {
+          console.error('Failed to check server status:', error);
+        }
+      }
     }
-    return response.json();
-  }
-  
-  export async function loader({ params }) {
-    const { serverId } = params;
-    const serverData = await fetchServerData(serverId);
-    return { props: { serverId } };
-  }
-  
-  export default function Page({ params }) {
-    return (
-      <div>
-        <h1>Server Number: {params.serverId}</h1>
-        {/* Render additional components or data using serverData */}
-      </div>
-    );
-  }
-  
+
+    checkServerStatus();
+  }, [session, serverId]);
+
+  // Render logic based on isModerated and isOwner
+  return (
+    <div>
+      {isModerated ? (
+        <div>
+          <h1>Moderated Server: {guildInfo?.name}</h1>
+          {isOwner ? (
+            <p>You are the owner of this server.</p>
+          ) : (
+            <p>You are not the owner of this server.</p>
+          )}
+        </div>
+      ) : (
+        <p>This server is not moderated by the bot.</p>
+      )}
+    </div>
+  );
+}
