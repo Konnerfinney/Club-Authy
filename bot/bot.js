@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { Client, GatewayIntentBits } = require('discord.js');
+const { Client, GatewayIntentBits, Events, Partials } = require('discord.js');
 const handleGuildCreate = require('./handleGuildCreate'); // Import the server join handler
 
 //const fetch = require('node-fetch'); // Ensure you've installed node-fetch or axios
@@ -10,13 +10,33 @@ const client = new Client({
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
     //GatewayIntentBits.MessageReactions,
-    GatewayIntentBits.DirectMessages,
-  ]
+    GatewayIntentBits.GuildMessageReactions, // Add this intent
+  ],
+  partials: [Partials.Message, Partials.Channel, Partials.Reaction],
+  partials: ['MESSAGE', 'CHANNEL', 'REACTION']
 });
 
 client.once('ready', () => {
   console.log('Bot is ready!');
 });
+
+client.on(Events.MessageReactionAdd, async (reaction, user) => {
+    console.log("reaction added");
+    // Check if the reaction is the correct emote and if the reaction is in the "new-members" channel
+    if (reaction.message.channel.name === 'new-members' &&
+        reaction.emoji.name === '✅' && // The emoji you used when creating the message
+        !user.bot) { // Ignore bot reactions
+      try {
+        // Fetch the member from the guild
+        const member = await reaction.message.guild.members.fetch(user.id);
+        // Send a DM to the user
+        const dmChannel = await member.createDM();
+        await dmChannel.send('Please input your full name and email for authentication purposes.');
+      } catch (error) {
+        console.error('Error sending DM:', error);
+      }
+    }
+  });
 
 client.on('guildCreate', async (guild) => {
     console.log(`Joined new guild: ${guild.name} (id: ${guild.id})`);
