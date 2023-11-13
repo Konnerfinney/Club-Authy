@@ -58,39 +58,67 @@ client.login(process.env.DISCORD_BOT_TOKEN); // Ensure this is the correct envir
 client.on('interactionCreate', async interaction => {
   // Check if the interaction is a button click
   if (interaction.isButton() && interaction.customId === 'authenticate') {
-    // Handle button click to show a modal
-    const modal = new ModalBuilder()
-      .setCustomId('authenticationModal')
-      .setTitle('Authentication');
+      // Handle button click to show a modal
+      const modal = new ModalBuilder()
+        .setCustomId('authenticationModal')
+        .setTitle('Authentication');
 
-    // Add input fields for full name, email, and comment
-    const fullNameInput = new TextInputBuilder()
-      .setCustomId('fullName')
-      .setLabel("Full Name")
-      .setStyle(TextInputStyle.Short);
+      // Add input fields for full name, email, and comment
+      const fullNameInput = new TextInputBuilder()
+        .setCustomId('fullName')
+        .setLabel("Full Name")
+        .setStyle(TextInputStyle.Short);
 
-    const emailInput = new TextInputBuilder()
-      .setCustomId('email')
-      .setLabel("Email")
-      .setStyle(TextInputStyle.Short);
+      const emailInput = new TextInputBuilder()
+        .setCustomId('email')
+        .setLabel("Email")
+        .setStyle(TextInputStyle.Short);
 
-    const commentInput = new TextInputBuilder()
-      .setCustomId('comment')
-      .setLabel("Comment")
-      .setStyle(TextInputStyle.Paragraph);
+      const commentInput = new TextInputBuilder()
+        .setCustomId('comment')
+        .setLabel("Comment")
+        .setStyle(TextInputStyle.Paragraph);
 
-    modal.addComponents(
-      new ActionRowBuilder().addComponents(fullNameInput),
-      new ActionRowBuilder().addComponents(emailInput),
-      new ActionRowBuilder().addComponents(commentInput)
-    );
+      modal.addComponents(
+        new ActionRowBuilder().addComponents(fullNameInput),
+        new ActionRowBuilder().addComponents(emailInput),
+        new ActionRowBuilder().addComponents(commentInput)
+      );
 
-    await interaction.showModal(modal);
-  }
+      await interaction.showModal(modal);
+    }
 
-  // Handle modal submission
-  if (interaction.isModalSubmit() && interaction.customId === 'authenticationModal') {
-    // Process the submitted data
-    // ... handle modal submission ...
-  }
+    // Handle modal submission
+    if (interaction.isModalSubmit() && interaction.customId === 'authenticationModal') {
+      try{
+      console.log("Submission");
+      // Process the submitted data
+      // ... handle modal submission ...
+      const userName = interaction.fields.getTextInputValue('fullName');
+      const userEmail = interaction.fields.getTextInputValue('email');
+      const userComment = interaction.fields.getTextInputValue('comment');
+
+      const discordServerId = interaction.guild.id;
+      const discordUserId = interaction.user.id;
+
+      // Construct the payload you want to send
+      const payload = {
+        userName: userName,
+        userEmail: userEmail,
+        userComment: userComment,
+        discordServerId: discordServerId,
+        discordUserId: discordUserId,
+      };
+      console.log(payload);
+      await interaction.reply({ content: 'Your information has been submitted!', ephemeral: true });
+      const res = await fetch(`http://localhost:3000/api/addUser`, {
+        method: 'POST',
+        body: JSON.stringify(payload),
+        headers: { 'Content-Type': 'application/json' },
+      });
+    
+  }catch (error) {
+    console.error('Error handling modal submission:', error);
+    await interaction.reply({ content: 'There was an error submitting your information.', ephemeral: true });
+  }}
 });
