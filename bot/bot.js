@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { Client, GatewayIntentBits, Events, Partials } = require('discord.js');
+const { Client, GatewayIntentBits, Events, Partials, ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle} = require('discord.js');
 const handleGuildCreate = require('./handleGuildCreate'); // Import the server join handler
 
 //const fetch = require('node-fetch'); // Ensure you've installed node-fetch or axios
@@ -11,32 +11,20 @@ const client = new Client({
     GatewayIntentBits.GuildMessages,
     //GatewayIntentBits.MessageReactions,
     GatewayIntentBits.GuildMessageReactions, // Add this intent
+    //GatewayIntentBits.MessageComponents,
   ],
-  partials: [Partials.Message, Partials.Channel, Partials.Reaction],
-  partials: ['MESSAGE', 'CHANNEL', 'REACTION']
+  partials: [Partials.Message, Partials.Channel, Partials.Reaction]
 });
 
 client.once('ready', () => {
   console.log('Bot is ready!');
 });
+// client.on('messageReactionAdd', (reaction, user) => {
+//   // Your logic here
+//   console.log(`A reaction is added by ${user.tag}`);
+//   // You can add more logic to handle the reaction
+// });
 
-client.on(Events.MessageReactionAdd, async (reaction, user) => {
-    console.log("reaction added");
-    // Check if the reaction is the correct emote and if the reaction is in the "new-members" channel
-    if (reaction.message.channel.name === 'new-members' &&
-        reaction.emoji.name === '✅' && // The emoji you used when creating the message
-        !user.bot) { // Ignore bot reactions
-      try {
-        // Fetch the member from the guild
-        const member = await reaction.message.guild.members.fetch(user.id);
-        // Send a DM to the user
-        const dmChannel = await member.createDM();
-        await dmChannel.send('Please input your full name and email for authentication purposes.');
-      } catch (error) {
-        console.error('Error sending DM:', error);
-      }
-    }
-  });
 
 client.on('guildCreate', async (guild) => {
     console.log(`Joined new guild: ${guild.name} (id: ${guild.id})`);
@@ -63,11 +51,46 @@ client.on('guildCreate', async (guild) => {
     }
   });
 
-client.on('messageCreate', message => {
-    console.log(message.content); // Check to see if the bot is receiving messages
-    if (message.content === 'ping') {
-    message.reply('pong');
-  }
-});
+
 
 client.login(process.env.DISCORD_BOT_TOKEN); // Ensure this is the correct environment variable
+
+client.on('interactionCreate', async interaction => {
+  // Check if the interaction is a button click
+  if (interaction.isButton() && interaction.customId === 'authenticate') {
+    // Handle button click to show a modal
+    const modal = new ModalBuilder()
+      .setCustomId('authenticationModal')
+      .setTitle('Authentication');
+
+    // Add input fields for full name, email, and comment
+    const fullNameInput = new TextInputBuilder()
+      .setCustomId('fullName')
+      .setLabel("Full Name")
+      .setStyle(TextInputStyle.Short);
+
+    const emailInput = new TextInputBuilder()
+      .setCustomId('email')
+      .setLabel("Email")
+      .setStyle(TextInputStyle.Short);
+
+    const commentInput = new TextInputBuilder()
+      .setCustomId('comment')
+      .setLabel("Comment")
+      .setStyle(TextInputStyle.Paragraph);
+
+    modal.addComponents(
+      new ActionRowBuilder().addComponents(fullNameInput),
+      new ActionRowBuilder().addComponents(emailInput),
+      new ActionRowBuilder().addComponents(commentInput)
+    );
+
+    await interaction.showModal(modal);
+  }
+
+  // Handle modal submission
+  if (interaction.isModalSubmit() && interaction.customId === 'authenticationModal') {
+    // Process the submitted data
+    // ... handle modal submission ...
+  }
+});
