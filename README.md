@@ -1,34 +1,25 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+This project is to allow for university clubs to easily add student authentication to their discord servers.
 
-## Getting Started
+Currently in development.
 
-First, run the development server:
+How to use:
+When this product is live you will be able to log into the website using discord oauth2 and be able to add our bot to any server you own.
+![Alt text](image.png)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+When the bot has been added it will allow users to authenticate themselves via discord in a new-members text channel.
+![Alt text](image-1.png)
+![Alt text](image-2.png)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+When a user has submitted their information they will be prompted to verify their email by clicking the link in an email sent to them by our application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Once that is complete you will see the users show up as a unapproved user in your server page on the website.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+You have the ability to approve or deny users which will grant them a role to interact with your discord server or not. 
 
-## Learn More
+You also have the ability to see all approved members in your server so that in the case of a student policy violation you are able to determine the student's name and ID for reporting to faculty.
 
-To learn more about Next.js, take a look at the following resources:
+Documentation:
+This is a Next JS 13 application using NextAuth, Tailwind, MongoDB, NodeMailer, React
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+System Design (in progress)
+![Alt text](<11-14-23 sys design.png>)
