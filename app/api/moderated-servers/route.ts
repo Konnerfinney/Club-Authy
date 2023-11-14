@@ -21,6 +21,7 @@ export async function GET() {
     });
 
   } catch (e) {
+    console.error('Database operation failed:', e); // Log the full error
     // Catch and return any errors that occur during the process
     return new Response(JSON.stringify({ success: false, error: e.message }), {
       status: 500,
