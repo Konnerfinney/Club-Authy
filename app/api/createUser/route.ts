@@ -3,8 +3,9 @@ require('dotenv').config();
 const { randomBytes } = require('crypto');
 import clientPromise from '../../utils/mongodb';
 import { generateVerificationToken } from '../../utils/authToken';
+import { NextRequest } from 'next/server';
 
-export async function POST(request) {
+export async function POST(request: NextRequest) {
 
   try {
     // Parse the incoming request body to get the user data
@@ -25,7 +26,7 @@ export async function POST(request) {
     // Initialize the MongoDB client and connect to the database
     const client = await clientPromise;
     const db = client.db("Discord_Bot"); 
-    
+    const userAuthStatus = 'unauthenticated';
     // Define the document to insert
     const doc = {
       discordServerId,
@@ -34,6 +35,7 @@ export async function POST(request) {
       userEmail,
       userComment: userComment || "",
       userAuthToken,
+      userAuthStatus,
       createdAt: new Date(), 
     };
     //  
@@ -61,7 +63,7 @@ export async function POST(request) {
     } else {
       throw new Error('Document insertion failed');
     }
-  } catch (e) {
+  } catch (e: any) {
     // Catch and return any errors that occur during the process
     return new Response(JSON.stringify({ success: false, error: e.message }), {
       status: 500,
