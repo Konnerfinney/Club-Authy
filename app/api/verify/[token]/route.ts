@@ -1,51 +1,50 @@
 // Backend token verification
-
 // pages/api/verify/[token].ts
-import type { NextApiRequest, NextApiResponse } from 'next';
+import type { NextRequest } from 'next/server';
+import clientPromise from '../../../utils/mongodb';
 
-export default async function GET(req: NextApiRequest) {
+export async function POST(req: NextRequest, { params }: {params: {token: string}}) {
     try{
-        const token = request.nextUrl.pathname.split('/').pop();
-        
-            const client = await clientPromise;
-            const db = client.db('Discord_Bot');
-            const collection = db.collection('Moderated Servers');
-            const server = await collection.findOne({ discordServerId: serverId });
-        
-            if (server) {
-              return new Response(JSON.stringify({ isModerated: true }), {
+        const token = params.token;
+        const body = await req.json();
+        const { discordServerId, discordUserId } = body;
+        const client = await clientPromise;
+        const db = client.db('Discord_Bot');
+        const collection = db.collection('users');
+        const user = await collection.findOne({ discordServerId: discordServerId, discordUserId: discordUserId, userAuthToken: token });
+        if (!user) {
+            return new Response(JSON.stringify({ error: 'User not found' }), {
+              status: 404,
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            });
+          }
+        const result = await collection.updateOne(user, { $set: { userAuthStatus: 'authenticated' } });
+        if (result.modifiedCount === 1) {
+            return new Response(JSON.stringify({}), {
                 status: 200,
                 headers: {
                   'Content-Type': 'application/json',
                 },
               });
             } else {
-              return new Response(JSON.stringify({ isModerated: false }), {
+              return new Response(JSON.stringify({}), {
                 status: 404,
                 headers: {
                   'Content-Type': 'application/json',
                 },
               });
             }
-          } catch (e) {
-            // ...error handling code
-          }
-    }
-
-
-  // Logic to check the database for the token
-  // This is pseudocode and will depend on your database setup
-  const user = await findUserByToken(token);
-
-  if (user) {
-    // Update user's verification status in the database
-    res.status(200).json({ message: 'Email verified successfully' });
-  } else {
-    // No user found with the token or token is invalid
-    res.status(404).json({ message: 'Invalid or expired token' });
-  }
-}
-
-async function findUserByToken(token){
-
+    
+        
+    } catch (error) {
+        console.error('Database query error:', error);
+        return new Response(JSON.stringify({ error: 'Internal server error' }), {
+          status: 500,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+      }
 }
