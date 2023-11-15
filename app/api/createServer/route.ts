@@ -1,7 +1,8 @@
 // app/api/newServer.ts
+import { NextRequest } from 'next/server';
 import clientPromise from '../../utils/mongodb';
 
-export async function POST(request) {
+export async function POST(request: NextRequest) {
   try {
     // Parse the incoming request body to get the server data
     const body = await request.json();
@@ -43,7 +44,7 @@ export async function POST(request) {
     } else {
       throw new Error('Server document insertion failed');
     }
-  } catch (e) {
+  } catch (e: any) {
     // Catch and return any errors that occur during the process
     return new Response(JSON.stringify({ success: false, error: e.message }), {
       status: 500,
