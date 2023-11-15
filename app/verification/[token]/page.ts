@@ -25,13 +25,17 @@ export default function VerifyPage() {
           setLoading(false);
         }
       }
+      if (router.isReady) {
+        const queryParams = new URLSearchParams(window.location.search);
+        const serverId = queryParams.get('discordServerId');
+        const userId = queryParams.get('discordUserId');
     };
 
     verifyToken();
   }, [token]);
 
   if (loading) {
-    return <p>Loading...</p>;
+    return (<p>Loading...</p>);
   }
 
   return (
