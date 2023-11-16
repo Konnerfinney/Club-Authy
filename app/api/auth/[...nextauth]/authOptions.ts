@@ -13,25 +13,18 @@ export const options: NextAuthOptions = {
         }),
     ],
     callbacks: {
-      async session({ session, token, user }) {
-        console.log("Session Callback Called");
-          session.accessToken = token.accessToken;
-          session.user.accessToken = token.accessToken;
-          // console.log("Token from session callback: ");
-          // console.log(token);
-          //console.log("Session: ");
-          //console.log(session)
-          return session;
+      async session({ session, token }) {
+        // Attach only necessary user information to the session
+        // Do not attach the access token
+        session.user = token?.user;
+        return session;
       },
 
       async jwt({ token, account }){
-        console.log("JWT Callback Called");
-          if (account){
-              token.accessToken = account.access_token
-          //console.log("access token: " + token.accessToken);
-          }
-          //console.log(token);
-          return token;
+        if (account){
+          token.accessToken = account.access_token;
+        }
+        return token;
       }
     },
     session: {
