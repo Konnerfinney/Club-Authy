@@ -23,3 +23,24 @@ This is a Next JS 13 application using NextAuth, Tailwind, MongoDB, NodeMailer, 
 
 System Design (in progress)
 ![Alt text](<11-14-23 sys design.png>)
+
+Internal API Endpoints:
+API Routes for Club Authy
+CREATE
+- createUser
+- createModeratedServer
+- createAuthToken
+- sendAuthEmail
+READ
+- getServer/[id]
+- getServers
+- getUser/(discordServerId + discordUserId)
+- getUsers/[discordServerId]
+UPDATE
+- updateUserEmail (For future use)
+- updateUserAuthState
+- updateUserToken
+- verifyUserEmail
+DELETE
+- deleteUserAuthToken
+
