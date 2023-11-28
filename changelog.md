@@ -14,3 +14,8 @@ Ideas:
 Maybe implement functionality that you can dm the bot to see what servers you are in and then select a server to activate a popup modal that will allow you to submit changes
     -> Potential problems:
         -> Users get good email verified (get approved to enter a discord server) => Then change to bad email
+
+11-15-23 Changes:
+To incorporate best practices I am switching discord access token to stay only on server-side and not be passed to the client.
+I will need to reroute some API calls (external to just discord) via my API. This also helps me with my validation issue of specific server pages to ensure that only a server owner can get access to bot functionality on their server
+
