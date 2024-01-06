@@ -2,8 +2,7 @@
 import clientPromise from '../../utils/mongodb'; // Adjust the path to your MongoDB connection utility
 import { NextRequest } from 'next/server';
 
-export async function GET(request: NextRequest) {
-  const req = new NextRequest(request);
+export async function GET(req: NextRequest) {
   try {
     // Extract query parameters
     const url = new URL(req.url);
