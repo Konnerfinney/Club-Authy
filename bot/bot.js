@@ -1,9 +1,9 @@
 require('dotenv').config();
-const { Client, GatewayIntentBits, Events, Partials, ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle} = require('discord.js');
-const handleGuildCreate = require('./handleGuildCreate'); // Import the server join handler
-
+const { Client, GatewayIntentBits, Events, Partials, ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, Role} = require('discord.js');
+const {createNewRole, handleGuildCreate} = require('./discordFunctions'); // Import the server join handler
+; // Import the role creation function
 //const fetch = require('node-fetch'); // Ensure you've installed node-fetch or axios
-
+const botID = '1135021991171215482';
 
 const client = new Client({
   intents: [
@@ -12,6 +12,7 @@ const client = new Client({
     //GatewayIntentBits.MessageReactions,
     GatewayIntentBits.GuildMessageReactions, // Add this intent
     //GatewayIntentBits.MessageComponents,
+    GatewayIntentBits.GuildMembers, // Add this intent
   ],
   partials: [Partials.Message, Partials.Channel, Partials.Reaction]
 });
@@ -24,20 +25,67 @@ client.once('ready', () => {
 //   console.log(`A reaction is added by ${user.tag}`);
 //   // You can add more logic to handle the reaction
 // });
+async function removeUnauthRole(guildId, memberId){
+  const guild = await client.guilds.fetch(guildId);
+  const member = await guild.members.fetch(memberId);
+  const roles = member.guild.roles.cache;
+  let unAuthUserRole = null;
+  roles.forEach(role => {
+    if (role.name === 'unauthenticated user') {
+        unAuthUserRole = role;
+        console.log(`Found role with botId ${botID}: ${role.name}`);
+    }
+  });
+  if (!unAuthUserRole) {
+      console.log(`No role found with botId ${botID}`);
+  }
+  if (unAuthUserRole) {
+    member.roles.remove(unAuthUserRole.id)
+        .then(() => console.log(`Removed role from ${member.displayName}`))
+        .catch(err => console.error(`Error removing role: ${err}`));
+  } else {
+      console.log(`Role not found`);
+  }
+}
 
+client.on('guildMemberAdd', member => {
+
+    const roles = member.guild.roles.cache;
+    let unAuthUserRole = null;
+    roles.forEach(role => {
+      if (role.name === 'unauthenticated user') {
+          unAuthUserRole = role;
+          console.log(`Found role with botId ${botID}: ${role.name}`);
+      }
+  });
+  
+  if (!unAuthUserRole) {
+      console.log(`No role found with botId ${botID}`);
+  }
+    console.log("New User Joined");
+    if (unAuthUserRole) {
+        member.roles.add(unAuthUserRole.id)
+            .then(() => console.log(`Added role to ${member.displayName}`))
+            .catch(err => console.error(`Error adding role: ${err}`));
+    } else {
+        console.log(`Role not found`);
+    }
+  });
 
 client.on('guildCreate', async (guild) => {
     console.log(`Joined new guild: ${guild.name} (id: ${guild.id})`);
-    await handleGuildCreate(guild);
+    const role = await createNewRole(guild);
+    await handleGuildCreate(guild,role)
     // Construct the payload you want to send
     const payload = {
       discordServerId: guild.id,
       discordServerName: guild.name,
     };
   
+  
     // Send the payload to your endpoint
     try {
-      const response = await fetch('http://localhost:3000/api/newServer', {
+      const response = await fetch('http://localhost:3000/api/createServer', {
         method: 'POST',
         body: JSON.stringify(payload),
         headers: { 'Content-Type': 'application/json' },
@@ -111,7 +159,7 @@ client.on('interactionCreate', async interaction => {
       };
       console.log(payload);
       await interaction.reply({ content: 'Your information has been submitted!', ephemeral: true });
-      const res = await fetch(`http://localhost:3000/api/addUser`, {
+      const res = await fetch(`http://localhost:3000/api/createUser`, {
         method: 'POST',
         body: JSON.stringify(payload),
         headers: { 'Content-Type': 'application/json' },
@@ -122,3 +170,4 @@ client.on('interactionCreate', async interaction => {
     await interaction.reply({ content: 'There was an error submitting your information.', ephemeral: true });
   }}
 });
+module.exports = {removeUnauthRole}

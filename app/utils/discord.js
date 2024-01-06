@@ -1,19 +1,6 @@
 // utils/discord.js
 require('dotenv').config();
 
-export async function getGuilds(accessToken) {
-    const response = await fetch('https://discord.com/api/users/@me/guilds', {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    if (!response.ok) {
-      throw new Error('Failed to fetch guilds');
-    }
-    const guilds = await response.json();
-    const ownedGuilds = guilds.filter(guild => guild.owner);
-    return ownedGuilds;
-  }
 
 export async function fetchGuildInfo(serverId) {
     console.log(`Fetching info for guild ${serverId}`);
