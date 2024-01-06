@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
       });
     }
     const userAuthToken = generateVerificationToken();
-    console.log(userAuthToken);
+    //console.log(userAuthToken);
     // Initialize the MongoDB client and connect to the database
     const client = await clientPromise;
     const db = client.db("Discord_Bot"); 
