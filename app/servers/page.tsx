@@ -2,7 +2,7 @@
 "use client";
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { getGuilds } from '../utils/discord';
+import Link from 'next/link'
 
 let DISCORD_CLIENT_ID=1135021991171215482
 
@@ -16,12 +16,12 @@ export default function ServersPage() {
       if (session) {
         try {
           // Fetch all guilds from Discord
-          const allGuildsResponse = await getGuilds(session.accessToken);
-  
+          const res = await fetch('/api/getOwnedServers');
+          const allGuildsResponse = await res.json()
           // Fetch the list of moderated server IDs from your API
-          const moderatedResponse = await fetch('/api/moderated-servers');
+          const moderatedResponse = await fetch('/api/getServers');
           const moderatedServerIds = await moderatedResponse.json();
-  
+          //console.log(allGuildsResponse);
           // Categorize guilds based on the presence in the moderatedServerIds
           const moderated = allGuildsResponse.filter(guild => 
             moderatedServerIds.some(moderatedServer => moderatedServer.discordServerId === guild.id)
@@ -51,11 +51,13 @@ export default function ServersPage() {
         <h1 className="text-2xl font-bold text-gray-900 my-4">Moderated Guilds</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {moderatedGuilds.map(guild => (
-            <div key={guild.id} className="bg-white rounded-lg shadow-md p-4">
-              <h2 className="text-xl font-semibold mb-2 text-gray-800">{guild.name}</h2>
-              <p className="text-md text-gray-600">ID: {guild.id}</p>
-              {/* Include additional guild details here */}
-            </div>
+            <Link key={guild.id} href={`/servers/${guild.id}`} passHref>
+              <p className="bg-white rounded-lg shadow-md p-4 block">
+                <h2 className="text-xl font-semibold mb-2 text-gray-800">{guild.name}</h2>
+                <p className="text-md text-gray-600">ID: {guild.id}</p>
+                {/* Include additional guild details here */}
+              </p>
+            </Link>
           ))}
         </div>
       </section>
