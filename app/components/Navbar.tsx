@@ -13,7 +13,7 @@ const Navbar = () => {
     //console.log(session);
     return (
         <div className="custom-dark p-4">
-            {!session?.user ? (
+            {!session ? (
                 <SignInButton/>
             ) : (
                 <>
