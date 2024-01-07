@@ -13,6 +13,7 @@ When the bot has been added it will allow users to authenticate themselves via d
 When a user has submitted their information they will be prompted to verify their email by clicking the link in an email sent to them by our application.
 
 Once that is complete you will see the users show up as a unapproved user in your server page on the website.
+![Alt text](image-3.png)
 
 You have the ability to approve or deny users which will grant them a role to interact with your discord server or not. 
 
