@@ -11,6 +11,7 @@ export default function Page({params}: {params: {serverId: string}}) {
   const [loading, setLoading] = useState(true);
   const [isClient, setIsClient] = useState(false);
   const [users, setUsers] = useState([]);
+  const [serverName, setServerName] = useState("");
 
   useEffect(() => {
     setIsClient(true); // Set the flag to true once the component is mounted
@@ -28,6 +29,8 @@ export default function Page({params}: {params: {serverId: string}}) {
         const serverId = params.serverId;
         const moderatedRes = await fetch(`/api/getServer/${serverId}`);
         const moderatedData = await moderatedRes.json();
+        console.log(moderatedData);
+        setServerName(moderatedData.serverName);
         setIsModerated(moderatedData.isModerated);
 
         // Fetch list of servers user owns
@@ -96,35 +99,42 @@ export default function Page({params}: {params: {serverId: string}}) {
   }
 
   return (
-    <div className="flex">
-      {/* Authenticated Users Column */}
-      <div className="w-1/2 p-4">
-        <h2>Authenticated Users</h2>
-        {users.authenticated.map(user => (
-          <div key={user._id} className="mb-4 p-4 border rounded">
-            <p>Name: {user.userName}</p>
-            <p>Email: {user.userEmail}</p>
-            <p>Comment: {user.userComment}</p>
-            <button onClick={() => handleAccept(user.discordUserId, user.discordServerId)} className="mr-2 bg-green-500 text-white px-4 py-2 rounded">
-              Accept
-            </button>
-            <button onClick={() => handleDeny(user.discordUserId, user.discordServerId)} className="bg-red-500 text-white px-4 py-2 rounded">
-              Deny
-            </button>
-          </div>
-        ))}
+    <div>
+      {/* Server Name Title */}
+      <div className="w-full text-center py-4">
+        <h1 className="text-2xl font-bold text-white">{serverName}</h1>
       </div>
+      <div className="flex">
 
-      {/* Approved Users Column */}
-      <div className="w-1/2 p-4">
-        <h2>Approved Users</h2>
-        {users.approved.map(user => (
-          <div key={user._id} className="mb-4 p-4 border rounded">
-            <p>Name: {user.userName}</p>
-            <p>Email: {user.userEmail}</p>
-            <p>Comment: {user.userComment}</p>
-          </div>
-        ))}
+        {/* Authenticated Users Column */}
+        <div className="w-1/2 p-4">
+          <h2>Authenticated Users</h2>
+          {users.authenticated.map(user => (
+            <div key={user._id} className="mb-4 p-4 border rounded bg-slate-900">
+              <p>Name: {user.userName}</p>
+              <p>Email: {user.userEmail}</p>
+              <p>Comment: {user.userComment}</p>
+              <button onClick={() => handleAccept(user.discordUserId, user.discordServerId)} className="mr-2 bg-green-500 text-white px-4 py-2 rounded">
+                Accept
+              </button>
+              <button onClick={() => handleDeny(user.discordUserId, user.discordServerId)} className="bg-red-500 text-white px-4 py-2 rounded">
+                Deny
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {/* Approved Users Column */}
+        <div className="w-1/2 p-4">
+          <h2>Approved Users</h2>
+          {users.approved.map(user => (
+            <div key={user._id} className="mb-4 p-4 border rounded bg-slate-900">
+              <p>Name: {user.userName}</p>
+              <p>Email: {user.userEmail}</p>
+              <p>Comment: {user.userComment}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
