@@ -11,16 +11,17 @@ export async function GET(request: NextRequest) {
     const db = client.db('Discord_Bot');
     const collection = db.collection('Moderated Servers');
     const server = await collection.findOne({ discordServerId: serverId });
+    console.log(server);
 
     if (server) {
-      return new Response(JSON.stringify({ isModerated: true }), {
+      return new Response(JSON.stringify({ isModerated: true, serverName: server.discordServerName }), {
         status: 200,
         headers: {
           'Content-Type': 'application/json',
         },
       });
     } else {
-      return new Response(JSON.stringify({ isModerated: false }), {
+      return new Response(JSON.stringify({ isModerated: false, serverName: "" }), {
         status: 404,
         headers: {
           'Content-Type': 'application/json',
