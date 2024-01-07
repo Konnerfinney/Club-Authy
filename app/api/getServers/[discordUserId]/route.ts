@@ -1,6 +1,6 @@
 
 // app/api/moderated-servers.ts
-import clientPromise from '../../utils/mongodb';
+import clientPromise from '../../../utils/mongodb';
 
 export async function GET({params}: {params: {discordUserId: string}}) {
   try {
