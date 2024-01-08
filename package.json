@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "concurrently \"next dev\" \"node bot/bot.js\"",
-    "build": "next build",
+    "build": "concurrently \"next build\" \"node bot/bot.js\"",
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
