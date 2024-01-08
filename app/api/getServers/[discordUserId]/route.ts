@@ -1,10 +1,14 @@
 
 // app/api/moderated-servers.ts
+import type { NextRequest } from 'next/server';
+
 import clientPromise from '../../../utils/mongodb';
 
-export async function GET({params}: {params: {discordUserId: string}}) {
+export async function GET(req: NextRequest,{params}: {params: {discordUserId: string}}) {//
   try {
+    console.log(req);
     // Initialize the MongoDB client and connect to the database
+
     const discordUserId = params.discordUserId;
     const client = await clientPromise;
     const db = client.db("Discord_Bot"); // Replace with your actual database name

@@ -2,6 +2,21 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+interface User {
+  _id: string; // Assuming _id is a string, common with MongoDB ObjectIDs
+  userName: string;
+  userEmail: string;
+  userComment: string;
+  discordUserId: string;
+  discordServerId: string;
+  status: 'authenticated' | 'approved' | 'unauthenticated';
+}
+
+interface Users {
+  authenticated: User[];
+  approved: User[];
+}
+
 
 export default function Page({params}: {params: {serverId: string}}) {
   const router = useRouter();
@@ -10,7 +25,7 @@ export default function Page({params}: {params: {serverId: string}}) {
   const [ownsServer, setOwnsServer] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isClient, setIsClient] = useState(false);
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<Users>({ authenticated: [], approved: [] });
   const [serverName, setServerName] = useState("");
 
   useEffect(() => {
@@ -40,7 +55,7 @@ export default function Page({params}: {params: {serverId: string}}) {
         const ownedServers = await ownedRes.json();
         
         // Check if user owns the current server
-        setOwnsServer(ownedServers.some(server => server.id === serverId));
+        setOwnsServer(ownedServers.some((server: { id: string; }) => server.id === serverId));
       } catch (error) {
         console.error('Error fetching server details:', error);
       } finally {
@@ -65,7 +80,7 @@ export default function Page({params}: {params: {serverId: string}}) {
     fetchUsers();
   }, [router, params.serverId, session]);
 
-  const handleAccept = async (userId, serverId) => {
+  const handleAccept = async (userId: any, serverId: any) => {
     // Implement the API call to accept a user
     // Example: axios.post(`/api/acceptUser`, { userId, serverId });
     await fetch(`/api/approveUser`, {
@@ -77,7 +92,7 @@ export default function Page({params}: {params: {serverId: string}}) {
     });
   };
 
-  const handleDeny = async (userId, serverId) => {
+  const handleDeny = async (userId: any, serverId: any) => {
     // Implement the API call to deny a user
     // Example: axios.post(`/api/denyUser`, { userId, serverId });
     await fetch(`/api/denyUser`, {
@@ -109,7 +124,7 @@ export default function Page({params}: {params: {serverId: string}}) {
         {/* Authenticated Users Column */}
         <div className="w-1/2 p-4">
           <h2>Authenticated Users</h2>
-          {users.authenticated.map(user => (
+          {users.authenticated.map((user: User) => (
             <div key={user._id} className="mb-4 p-4 border rounded bg-slate-900">
               <p>Name: {user.userName}</p>
               <p>Email: {user.userEmail}</p>
@@ -127,7 +142,8 @@ export default function Page({params}: {params: {serverId: string}}) {
         {/* Approved Users Column */}
         <div className="w-1/2 p-4">
           <h2>Approved Users</h2>
-          {users.approved.map(user => (
+          {}
+          {users.approved.map((user: User) => (
             <div key={user._id} className="mb-4 p-4 border rounded bg-slate-900">
               <p>Name: {user.userName}</p>
               <p>Email: {user.userEmail}</p>

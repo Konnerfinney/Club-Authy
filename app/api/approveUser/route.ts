@@ -1,5 +1,5 @@
 //removeUnauthRole
-//const { removeUnauthRole } = require('../../../bot/bot')
+const { removeUnauthRole } = require('../../../bot/bot')
 
 import clientPromise from '../../utils/mongodb';
 import { NextRequest } from 'next/server';

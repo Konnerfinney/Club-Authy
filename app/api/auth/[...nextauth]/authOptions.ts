@@ -16,7 +16,7 @@ export const options: NextAuthOptions = {
       async session({ session, token }) {
         // Attach only necessary user information to the session
         // Do not attach the access token
-        session.user = token?.user;
+        session.user = token?.user as any;
         return session;
       },
 

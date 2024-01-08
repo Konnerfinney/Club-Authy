@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
     }
 
     const guilds = await discordResponse.json();
-    const ownedGuilds = guilds.filter(guild => guild.owner);
+    const ownedGuilds = guilds.filter((guild: { owner: any; }) => guild.owner);
     //console.log(JSON.stringify({ ownedGuilds }));
     return new NextResponse(JSON.stringify(ownedGuilds), {
         status: 200, // Set your desired status code

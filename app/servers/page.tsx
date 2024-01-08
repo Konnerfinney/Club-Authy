@@ -5,11 +5,16 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link'
 
 let DISCORD_CLIENT_ID=1135021991171215482
+interface guild {
+  id: string;
+  name: string;
+}
+
 
 export default function ServersPage() {
   const { data: session } = useSession();
-  const [moderatedGuilds, setModeratedGuilds] = useState([]);
-  const [unmoderatedGuilds, setUnmoderatedGuilds] = useState([]);
+  const [moderatedGuilds, setModeratedGuilds] = useState<guild[]>([]);
+  const [unmoderatedGuilds, setUnmoderatedGuilds] = useState<guild[]>([]);
 
   useEffect(() => {
     async function loadGuilds() {
@@ -23,12 +28,12 @@ export default function ServersPage() {
           const moderatedServerIds = await moderatedResponse.json();
           //console.log(allGuildsResponse);
           // Categorize guilds based on the presence in the moderatedServerIds
-          const moderated = allGuildsResponse.filter(guild => 
-            moderatedServerIds.some(moderatedServer => moderatedServer.discordServerId === guild.id)
+          const moderated = allGuildsResponse.filter((guild: { id: any; }) => 
+            moderatedServerIds.some((moderatedServer: { discordServerId: any; }) => moderatedServer.discordServerId === guild.id)
           );
   
-          const unmoderated = allGuildsResponse.filter(guild => 
-            !moderatedServerIds.some(moderatedServer => moderatedServer.discordServerId === guild.id)
+          const unmoderated = allGuildsResponse.filter((guild: { id: any; }) => 
+            !moderatedServerIds.some((moderatedServer: { discordServerId: any; }) => moderatedServer.discordServerId === guild.id)
           );
   
           setModeratedGuilds(moderated);
